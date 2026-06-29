@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#FBF6EE">
+<title>AlUla — Journey Through Time</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --ink:#2A201A; --ink2:#5A4A3C; --ivory:#FBF6EE; --white:#FFFFFF; --gold:#D8A24A; --gold-d:#BA8A38;
+  --heritage:#D8A24A; --hotels:#5E93BC; --dining:#D87A4C; --nature:#7BA877; --cafe:#C58B5A;
+  --line:#E8DFD0; --muted:#8A7D6C; --shadow:0 4px 20px rgba(42,32,26,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--ivory);color:var(--ink);
+  -webkit-font-smoothing:antialiased;position:fixed;width:100%;
+}
+body.rtl{direction:rtl}
+#app{height:100dvh;display:flex;flex-direction:column;position:relative}
+
+/* ---------- Splash ---------- */
+#splash{position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#2A201A,#5A4A3C 60%,#D8A24A);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;transition:opacity .8s ease}
+#splash.hide{opacity:0;pointer-events:none}
+#splash .logo{width:90px;height:90px;margin-bottom:22px;animation:rise .9s ease}
+#splash h1{font-size:40px;font-weight:700;letter-spacing:1px;animation:rise 1s ease}
+#splash .sub{font-size:16px;opacity:.9;margin-top:6px;letter-spacing:3px;text-transform:uppercase;animation:rise 1.2s ease}
+#splash .bar{width:120px;height:3px;background:rgba(255,255,255,.3);border-radius:2px;margin-top:28px;overflow:hidden}
+#splash .bar i{display:block;height:100%;width:40%;background:#fff;border-radius:2px;animation:load 1.8s ease forwards}
+#splash .skip{position:absolute;bottom:40px;font-size:13px;opacity:.7;border:1px solid rgba(255,255,255,.4);
+  padding:8px 20px;border-radius:20px;background:transparent;color:#fff}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes load{from{width:0}to{width:100%}}
+
+/* ---------- Header ---------- */
+.topbar{padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;display:flex;align-items:center;gap:8px;
+  background:var(--ivory);flex-wrap:wrap;border-bottom:1px solid var(--line);z-index:5}
+.chip{background:rgba(42,32,26,.06);border:none;border-radius:14px;padding:7px 12px;font-size:13px;color:var(--ink);
+  font-weight:600;white-space:nowrap}
+.chip.live{background:rgba(42,32,26,.85);color:#fff;font-size:12px}
+.filters{display:flex;gap:7px;overflow-x:auto;padding:10px 14px;background:var(--ivory);scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filter{background:rgba(42,32,26,.06);border:none;border-radius:16px;padding:8px 16px;font-size:14px;color:var(--ink);
+  white-space:nowrap;font-weight:500}
+.filter.active{background:var(--gold);color:#fff}
+
+/* ---------- Views ---------- */
+.view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
+.view.hidden{display:none}
+
+/* AR */
+#arVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#1a1410}
+#arOverlay{position:absolute;inset:0;pointer-events:none}
+.ar-marker{position:absolute;transform:translate(-50%,-50%);background:rgba(42,32,26,.82);backdrop-filter:blur(4px);
+  border-radius:12px;padding:8px 12px;min-width:120px;transition:left .25s,top .25s;border:1px solid rgba(255,255,255,.12)}
+.ar-marker .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:6px}
+.ar-marker .nm{color:#fff;font-size:13px;font-weight:600}
+.ar-marker .ds{color:#E8DCC8;font-size:11px;margin-top:2px}
+.ar-hint{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(42,32,26,.8);
+  color:#fff;font-size:13px;padding:9px 16px;border-radius:18px;white-space:nowrap;text-align:center}
+.ar-compass{position:absolute;bottom:150px;left:50%;transform:translateX(-50%);width:84px;height:84px;
+  border-radius:50%;border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center}
+.ar-compass .inner{width:60px;height:60px;border-radius:50%;border:1px solid rgba(255,255,255,.35);
+  display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff}
+.ar-compass .n{position:absolute;top:-8px;color:var(--gold);font-size:13px;font-weight:700}
+.ar-enable{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--gold);color:#fff;
+  border:none;padding:14px 26px;border-radius:24px;font-size:15px;font-weight:600;pointer-events:auto;box-shadow:var(--shadow)}
+.ar-banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(216,162,74,.92);
+  color:#3a2a12;font-size:12px;padding:6px 14px;border-radius:14px;white-space:nowrap;font-weight:600}
+
+/* Explore */
+.list{padding:14px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.card .photo{height:150px;background:linear-gradient(135deg,#E8D5B5,#C9A876);position:relative;display:flex;
+  align-items:flex-end;justify-content:flex-start}
+.card .photo img{width:100%;height:100%;object-fit:cover}
+.card .badge{position:absolute;top:10px;inset-inline-start:10px;background:rgba(42,32,26,.7);color:#fff;
+  font-size:11px;padding:4px 10px;border-radius:10px;font-weight:600}
+.card .rating{position:absolute;top:10px;inset-inline-end:10px;background:rgba(255,255,255,.9);color:var(--ink);
+  font-size:12px;padding:4px 9px;border-radius:10px;font-weight:700}
+.card .body{padding:13px 15px}
+.card h3{font-size:17px;font-weight:700;margin-bottom:3px}
+.card .meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.card p{font-size:13px;line-height:1.55;color:var(--ink2)}
+.card .actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{border:none;border-radius:12px;padding:9px 14px;font-size:13px;font-weight:600;display:inline-flex;
+  align-items:center;gap:5px}
+.btn.primary{background:var(--gold);color:#fff}
+.btn.ghost{background:rgba(42,32,26,.06);color:var(--ink)}
+
+/* Map */
+#map{width:100%;height:100%}
+
+/* Services */
+.svc-grid{padding:14px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.svc{background:var(--white);border-radius:14px;padding:16px;box-shadow:var(--shadow);text-decoration:none;color:var(--ink)}
+.svc .ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#fff;margin-bottom:10px}
+.svc .nm{font-size:14px;font-weight:700}
+.svc .nt{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4}
+.svc-cat{padding:6px 14px 2px;font-size:13px;font-weight:700;color:var(--muted);grid-column:1/-1;text-transform:uppercase;letter-spacing:.5px}
+
+/* Camera */
+#camWrap{position:absolute;inset:0;background:#000;display:flex;flex-direction:column}
+#camVideo{flex:1;width:100%;object-fit:cover}
+#camCanvas{display:none}
+.cam-controls{position:absolute;bottom:90px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:30px}
+.cam-shutter{width:68px;height:68px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.5)}
+.cam-flip{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:20px}
+.cam-filters{position:absolute;top:calc(env(safe-area-inset-top) + 10px);left:0;right:0;display:flex;gap:8px;
+  overflow-x:auto;padding:0 14px;scrollbar-width:none}
+.cam-filters::-webkit-scrollbar{display:none}
+.cam-filter{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:14px;
+  padding:6px 14px;font-size:12px;white-space:nowrap}
+.cam-filter.active{background:var(--gold);border-color:var(--gold)}
+
+/* Detail sheet */
+#sheet{position:fixed;inset:0;z-index:200;background:rgba(42,32,26,.5);display:none;align-items:flex-end}
+#sheet.show{display:flex}
+.sheet-inner{background:var(--ivory);width:100%;max-height:88%;border-radius:22px 22px 0 0;overflow-y:auto;
+  animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(40px)}to{transform:none}}
+.sheet-photo{height:200px;background:linear-gradient(135deg,#E8D5B5,#C9A876);position:relative}
+.sheet-photo img{width:100%;height:100%;object-fit:cover}
+.sheet-close{position:absolute;top:14px;inset-inline-end:14px;width:34px;height:34px;border-radius:50%;
+  background:rgba(0,0,0,.4);color:#fff;border:none;font-size:18px}
+.sheet-body{padding:18px 18px calc(env(safe-area-inset-bottom) + 24px)}
+.sheet-body h2{font-size:22px;margin-bottom:4px}
+.sheet-body .meta{font-size:13px;color:var(--muted);margin-bottom:14px}
+.sheet-body p{font-size:15px;line-height:1.7;color:var(--ink2);margin-bottom:14px}
+.tip{background:rgba(216,162,74,.12);border-inline-start:3px solid var(--gold);padding:11px 14px;border-radius:0 10px 10px 0;
+  font-size:14px;line-height:1.6;margin-bottom:14px}
+
+/* Tab bar */
+.tabbar{display:flex;background:rgba(42,32,26,.94);padding:8px 6px calc(env(safe-area-inset-bottom) + 8px);
+  position:relative;z-index:10}
+.tab{flex:1;background:none;border:none;color:#B8AC98;display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:10px;font-weight:600;padding:4px}
+.tab.active{color:var(--gold)}
+.tab svg{width:22px;height:22px}
+
+/* Language switch */
+.lang-btn{position:absolute;top:calc(env(safe-area-inset-top) + 8px);inset-inline-end:14px;z-index:6;
+  background:rgba(42,32,26,.85);color:#fff;border:none;border-radius:14px;padding:6px 12px;font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Splash -->
+  <div id="splash">
+    <svg class="logo" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="34" r="16" fill="#fff" opacity=".95"/>
+      <path d="M10 78 L34 44 L52 68 L66 50 L90 78 Z" fill="#fff" opacity=".9"/>
+    </svg>
+    <h1>AlUla</h1>
+    <div class="sub">Journey Through Time</div>
+    <div class="bar"><i></i></div>
+    <button class="skip" onclick="hideSplash()">Skip</button>
+  </div>
+
+  <!-- Header (hidden on AR/Camera) -->
+  <div class="topbar" id="topbar">
+    <button class="chip live" id="compassChip">N 0°</button>
+    <button class="chip" id="tiltChip">↑ 0°</button>
+    <button class="chip" id="sitesChip">0 sites</button>
+  </div>
+  <div class="filters" id="filters"></div>
+
+  <!-- Views -->
+  <div class="view hidden" id="view-ar">
+    <video id="arVideo" autoplay muted playsinline></video>
+    <div id="arOverlay"></div>
+    <div class="ar-banner hidden" id="arBanner"></div>
+    <div class="ar-compass"><div class="inner">↑</div><span class="n">N</span></div>
+    <div class="ar-hint" id="arHint">Hold phone upright and pan to discover sites</div>
+    <button class="ar-enable" id="arEnable">Enable camera & compass</button>
+  </div>
+
+  <div class="view" id="view-explore"><div class="list" id="exploreList"></div></div>
+
+  <div class="view hidden" id="view-map"><div id="map"></div></div>
+
+  <div class="view hidden" id="view-services"><div class="svc-grid" id="svcGrid"></div></div>
+
+  <div class="view hidden" id="view-camera">
+    <div id="camWrap">
+      <video id="camVideo" autoplay muted playsinline></video>
+      <canvas id="camCanvas"></canvas>
+      <div class="cam-filters" id="camFilters"></div>
+      <div class="cam-controls">
+        <button class="cam-flip" id="camFlip">⟲</button>
+        <button class="cam-shutter" id="camShutter"></button>
+        <button class="cam-flip" id="camShare">⤴</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="view hidden" id="view-saved"><div class="list" id="savedList"></div></div>
+
+  <!-- Tab bar -->
+  <div class="tabbar" id="tabbar"></div>
+</div>
+
+<!-- Detail sheet -->
+<div id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
+
+<button class="lang-btn" id="langBtn">EN</button>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
