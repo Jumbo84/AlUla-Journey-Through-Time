@@ -109,7 +109,7 @@ function tipTxt(p){ return state.lang==='ar' ? p.tip_ar : p.tip_en; }
 function placePhoto(p){
   // real photo with graceful fallback to gradient
   return `<div class="photo" style="background:linear-gradient(135deg,#E8D5B5,${CAT_COLORS[p.category]||'#C9A876'}33)">
-    <img src="photos/${p.id}.jpg" alt="${nm(p)}" loading="lazy"
+    <img src="${p.id}.jpg" alt="${nm(p)}" loading="lazy"
       onerror="this.style.display='none'">
     <span class="badge">${state.lang==='ar'?catAr(p.category):p.category}</span>
     ${p.rating?`<span class="rating">★ ${p.rating}</span>`:''}
@@ -165,7 +165,7 @@ function bindCards(scope){
 function openSheet(p){
   $('#sheetInner').innerHTML = `
     <div class="sheet-photo" style="background:linear-gradient(135deg,#E8D5B5,${CAT_COLORS[p.category]||'#C9A876'})">
-      <img src="photos/${p.id}.jpg" alt="${nm(p)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
+      <img src="${p.id}.jpg" alt="${nm(p)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
       <button class="sheet-close" onclick="closeSheet()">✕</button>
     </div>
     <div class="sheet-body">
@@ -220,9 +220,9 @@ function renderServices(){
     cats[cat].forEach(s=>{
       const icon = svcIcon(s.cat);
       const accent = s.accent||'#5E93BC';
-      // Try a logo file at logos/{id}.png. If it loads, show it (white bg);
+      // Try a logo file at {id}.png (root). If it loads, show it (white bg);
       // if it 404s, onerror swaps back to the coloured icon tile automatically.
-      const logoSrc = `logos/${s.id}.png`;
+      const logoSrc = `${s.id}.png`;
       html += `<a class="svc" href="${s.url}" target="_blank" rel="noopener">
         <div class="ic logo-ic" style="background:${accent}">
           <img src="${logoSrc}" alt="${s.name}" loading="lazy"
@@ -355,7 +355,7 @@ function renderArCard(p){
   state.arAim=p.id;
   card.classList.remove('hidden');
   card.innerHTML=`
-    <div class="thumb"><img src="photos/${p.id}.jpg" alt="" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#E8D5B5,${CAT_COLORS[p.category]||'#C9A876'})'"></div>
+    <div class="thumb"><img src="${p.id}.jpg" alt="" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#E8D5B5,${CAT_COLORS[p.category]||'#C9A876'})'"></div>
     <div class="info">
       <h4>${nm(p)}</h4>
       <div class="m">${state.lang==='ar'?catAr(p.category):p.category} · ${distLabel(p)}</div>

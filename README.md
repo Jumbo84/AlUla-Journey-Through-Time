@@ -50,8 +50,8 @@ app.js             All logic: tabs, AR, compass, map, camera, services, i18n
 manifest.json      PWA manifest (installable)
 sw.js              Service worker (offline cache)
 places.json        Real AlUla data (19 places + 18 services)
-photos/            Place photos, named by place id (e.g. hegra.jpg)
-logos/             Service logos, named by service id (e.g. booking.png)
+<place-id>.jpg     Place photos in the root, named by place id (e.g. hegra.jpg)
+<service-id>.png   Service logos in the root, named by service id (e.g. booking.png)
 icon-192.png       App icon
 icon-512.png       App icon
 ```
@@ -72,8 +72,8 @@ icon-512.png       App icon
 ## 🖼️ Adding real photos & logos (optional)
 
 Images are matched automatically by id — no code changes needed:
-- **Place photos** go in `photos/` named `<place-id>.jpg` (e.g. `hegra.jpg`). If a file is missing the card falls back to a gradient.
-- **Service logos** go in `logos/` named `<service-id>.png` (e.g. `booking.png`, `gmaps.png`, `experience_alula.png`). If a file is missing the service falls back to its coloured icon.
+- **Place photos** sit in the repo root named `<place-id>.jpg` (e.g. `hegra.jpg`). If a file is missing the card falls back to a gradient.
+- **Service logos** sit in the repo root named `<service-id>.png` (e.g. `booking.png`, `gmaps.png`, `experience_alula.png`). If a file is missing the service falls back to its coloured icon.
 - Use only images you own (RCU archive / your own) or open-licensed (Wikimedia). Brand logos in this prototype are supplied by the project owner for internal demonstration only.
 
 ---
